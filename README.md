@@ -31,7 +31,7 @@ Descripción
 Descripción: Un administrador desea agregar una nueva sucursal asociada a una ciudad existente.
 
 ``````javascript
-db.sucursales.updateOne(  { nombre: { $regex: ".*\\S.*", $options: "i" } },  { $set: { nombre: "Sucursal Centro" } },  { upsert: true })
+db.sucursales.updateOne( { nombre: { $regex: ".*\\S.*", $options: "i" } },  { $set: { nombre: "Sucursal Centro" } },  { upsert: true })
 ``````
 
 
@@ -73,7 +73,22 @@ db.clientes.updateOne(  { numero_seguimiento: { $regex: ".*\\S.*", $options: "i"
 
 Descripción: Un administrador desea registrar un nuevo envío, asociando un cliente, paquete, ruta y sucursal.
 
-``````
+``````javascript
+db.envios.insertOne({
+  cliente_id: ObjectId("cliente_id"),
+  paquete_id: ObjectId("paquete_id"),
+  fecha_envio: new Date(),
+  destino: "Avenida Principal 456",
+  ruta_id: ObjectId("ruta_id"),
+  sucursal_id: ObjectId("sucursal_id"),
+  seguimiento: [
+    {
+      ubicacion: "Sucursal de origen",
+      fecha_hora: new Date(),
+      estado: "Registrado"
+    }
+  ]
+})
 ``````
 
 
@@ -82,7 +97,7 @@ Descripción: Un administrador desea registrar un nuevo envío, asociando un cli
 
 Descripción: Un administrador desea agregar un nuevo vehículo a la base de datos.
 
-``````
+``````javascript
 db.clientes.updateOne(  { placa: { $regex: ".*\\S.*", $options: "i" } },  { $set: { placa: "ABC123" } },  { upsert: true })
 ``````
 
@@ -92,7 +107,7 @@ db.clientes.updateOne(  { placa: { $regex: ".*\\S.*", $options: "i" } },  { $set
 
 Descripción: Un administrador desea agregar un nuevo conductor a la base de datos.
 
-``````
+``````javascript
 db.clientes.updateOne(  { nombre: { $regex: ".*\\S.*", $options: "i" } },  { $set: { nombre: "Maria Gonzales" } },  { upsert: true })
 ``````
 
@@ -102,8 +117,11 @@ db.clientes.updateOne(  { nombre: { $regex: ".*\\S.*", $options: "i" } },  { $se
 
 Descripción: Un administrador desea agregar un número de teléfono para un conductor existente.
 
-```
-
+```javascript
+db.conductores.updateOne(
+  { _id: ObjectId("conductor_id") },
+  { $push: { telefonos: { numero: "0987654321" } } }
+)
 ```
 
 
@@ -112,7 +130,7 @@ Descripción: Un administrador desea agregar un número de teléfono para un con
 
 Descripción: Un administrador desea asignar un conductor a una ruta específica utilizando un vehículo.
 
-```
+```javascript
 
 ```
 
@@ -122,7 +140,7 @@ Descripción: Un administrador desea asignar un conductor a una ruta específica
 
 Descripción: Un administrador desea agregar un nuevo auxiliar de reparto a la base de datos.
 
-```
+```javascript
 
 ```
 
@@ -132,7 +150,7 @@ Descripción: Un administrador desea agregar un nuevo auxiliar de reparto a la b
 
 Descripción: Un administrador desea asignar un auxiliar de reparto a una ruta específica.
 
-```
+```javascript
 
 ```
 
@@ -142,7 +160,7 @@ Descripción: Un administrador desea asignar un auxiliar de reparto a una ruta e
 
 Descripción: Un administrador desea registrar un evento de seguimiento para un paquete.
 
-```
+```javascript
 
 ```
 
@@ -152,7 +170,7 @@ Descripción: Un administrador desea registrar un evento de seguimiento para un 
 
 Descripción: Un administrador desea generar un reporte de todos los envíos realizados por un cliente específico.
 
-```
+```javascript
 
 ```
 
@@ -162,7 +180,7 @@ Descripción: Un administrador desea generar un reporte de todos los envíos rea
 
 Descripción: Un administrador desea actualizar el estado de un paquete específico.
 
-```
+```javascript
 
 ```
 
@@ -172,7 +190,7 @@ Descripción: Un administrador desea actualizar el estado de un paquete específ
 
 Descripción: Un administrador desea rastrear la ubicación actual de un paquete específico.
 
-```
+```javascript
 
 ```
 
@@ -184,7 +202,7 @@ Descripción: Un administrador desea rastrear la ubicación actual de un paquete
 
 Descripción: Un administrador desea obtener la información completa de todos los envíos, incluyendo detalles del cliente, paquete, ruta, conductor, y sucursal.
 
-```
+```javascript
 
 ```
 
@@ -194,7 +212,7 @@ Descripción: Un administrador desea obtener la información completa de todos l
 
 Descripción: Un administrador desea obtener el historial completo de envíos de un cliente específico, incluyendo detalles de los paquetes y los eventos de seguimiento.
 
-```
+```javascript
 
 ```
 
@@ -204,7 +222,7 @@ Descripción: Un administrador desea obtener el historial completo de envíos de
 
 Descripción: Un administrador desea obtener una lista de todos los conductores y las rutas a las que están asignados, incluyendo detalles del vehículo utilizado y la sucursal correspondiente.
 
-```
+```javascript
 
 ```
 
@@ -214,7 +232,7 @@ Descripción: Un administrador desea obtener una lista de todos los conductores 
 
 Descripción: Un administrador desea obtener detalles de todas las rutas, incluyendo los auxiliares asignados a cada ruta.
 
-```
+```javascript
 
 ```
 
@@ -224,7 +242,7 @@ Descripción: Un administrador desea obtener detalles de todas las rutas, incluy
 
 Descripción: Un administrador desea generar un reporte de todos los paquetes agrupados por sucursal y estado.
 
-```
+```javascript
 
 ```
 
@@ -234,7 +252,7 @@ Descripción: Un administrador desea generar un reporte de todos los paquetes ag
 
 Descripción: Un administrador desea obtener la información completa de un paquete específico y su historial de seguimiento.
 
-```
+```javascript
 
 ```
 
@@ -246,7 +264,7 @@ Descripción: Un administrador desea obtener la información completa de un paqu
 
 Descripción: Un administrador desea obtener todos los paquetes que fueron enviados dentro de un rango de fechas específico.
 
-```
+```javascript
 
 ```
 
@@ -256,7 +274,7 @@ Descripción: Un administrador desea obtener todos los paquetes que fueron envia
 
 Descripción: Un administrador desea obtener todos los paquetes que tienen ciertos estados específicos (por ejemplo, 'en tránsito' o 'entregado').
 
-```
+```javascript
 
 ```
 
@@ -266,7 +284,7 @@ Descripción: Un administrador desea obtener todos los paquetes que tienen ciert
 
 Descripción: Un administrador desea obtener todos los paquetes excluyendo aquellos que tienen ciertos estados específicos (por ejemplo, 'recibido' o 'retenido en aduana').
 
-```
+```javascript
 
 ```
 
@@ -276,7 +294,7 @@ Descripción: Un administrador desea obtener todos los paquetes excluyendo aquel
 
 Descripción: Un administrador desea obtener todos los clientes que realizaron envíos dentro de un rango de fechas específico.
 
-```
+```javascript
 
 ```
 
@@ -286,7 +304,7 @@ Descripción: Un administrador desea obtener todos los clientes que realizaron e
 
 Descripción: Un administrador desea obtener todos los conductores que no están asignados a ciertas rutas específicas.
 
-```
+```javascript
 
 ```
 
@@ -296,7 +314,7 @@ Descripción: Un administrador desea obtener todos los conductores que no están
 
 Descripción: Un administrador desea obtener todos los paquetes cuyo valor declarado está dentro de un rango específico.
 
-```
+```javascript
 
 ```
 
@@ -306,7 +324,7 @@ Descripción: Un administrador desea obtener todos los paquetes cuyo valor decla
 
 Descripción: Un administrador desea obtener todos los auxiliares de reparto que están asignados a ciertas rutas específicas.
 
-```
+```javascript
 
 ```
 
@@ -316,7 +334,7 @@ Descripción: Un administrador desea obtener todos los auxiliares de reparto que
 
 Descripción: Un administrador desea obtener todos los envíos cuyos destinos no están en ciertas ciudades específicas.
 
-```
+```javascript
 
 ```
 
@@ -326,7 +344,7 @@ Descripción: Un administrador desea obtener todos los envíos cuyos destinos no
 
 Descripción: Un administrador desea obtener todos los eventos de seguimiento de paquetes que ocurrieron dentro de un rango de fechas específico.
 
-```
+```javascript
 
 ```
 
@@ -336,7 +354,7 @@ Descripción: Un administrador desea obtener todos los eventos de seguimiento de
 
 Descripción: Un administrador desea obtener todos los clientes que tienen paquetes de ciertos tipos específicos (por ejemplo, 'nacional' o 'internacional').
 
-```
+```javascript
 
 ```
 
