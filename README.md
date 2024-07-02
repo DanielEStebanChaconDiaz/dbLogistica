@@ -50,8 +50,11 @@ db.clientes.updateOne(  { nombre: { $regex: ".*\\S.*", $options: "i" } },  { $se
 
 Descripción: Un administrador desea agregar un número de teléfono para un cliente existente.
 
-``````
-
+``````javascript
+db.clientes.updateOne(
+  { _id: ObjectId("cliente_id") },
+  { $push: { telefonos: { numero: "1234567890" } } }
+)
 ``````
 
 
@@ -60,7 +63,7 @@ Descripción: Un administrador desea agregar un número de teléfono para un cli
 
 Descripción: Un administrador desea registrar un nuevo paquete en la base de datos.
 
-``````
+``````javascript
 db.clientes.updateOne(  { numero_seguimiento: { $regex: ".*\\S.*", $options: "i" } },  { $set: { numero_seguimiento: "TRACK123456" } },  { upsert: true })
 ``````
 
