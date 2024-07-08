@@ -2,85 +2,128 @@
 
 ## Casos de Uso Básicos
 
+Entendido. Aquí están las consultas resueltas, manteniendo el formato original y evitando un tono artificial:
+
+## Casos de Uso Básicos
+
 ### Caso de Uso 1: Registrar un Nuevo País
 
-comando mongoDB:
-
 ```javascript
-db.paises.updateOne(  { nombre: { $regex: ".*\\S.*", $options: "i" } },  { $set: { nombre: "Mexico" } },  { upsert: true })
+db.paises.updateOne(
+  { nombre: { $regex: ".*\\S.*", $options: "i" } },
+  { $set: { nombre: "Mexico" } },
+  { upsert: true }
+)
 ```
 
-Descripción: Un administrador desea agregar un nuevo país a la base de datos.
-
-Recomendaciones: El nombre del país no pude repetirse y por ende tampoco su id.
+Recomendaciones: Asegurar que el nombre del país sea único. Considerar agregar un campo para el código ISO del país.
 
 ### Caso de Uso 2: Registrar una Nueva Ciudad
 
-Descripción: Un administrador desea agregar una nueva ciudad asociada a un país existente.
-
-Comando mongoDB:
-
 ```javascript
-db.ciudades.updateOne(  { nombre: { $regex: ".*\\S.*", $options: "i" } },  { $set: { nombre: "Ciudad de Mexico" } },  { upsert: true })
+db.ciudades.updateOne(
+  { nombre: { $regex: ".*\\S.*", $options: "i" } },
+  { $set: { 
+      nombre: "Ciudad de Mexico",
+      pais_id: ObjectId("id_del_pais")
+    }
+  },
+  { upsert: true }
+)
 ```
 
-Descripción 
+Recomendaciones: Verificar que el país exista antes de crear la ciudad.
 
 ### Caso de Uso 3: Registrar una Nueva Sucursal
 
-Descripción: Un administrador desea agregar una nueva sucursal asociada a una ciudad existente.
+```javascript
+db.sucursales.updateOne(
+  { nombre: { $regex: ".*\\S.*", $options: "i" } },
+  { $set: { 
+      nombre: "Sucursal Centro",
+      ciudad_id: ObjectId("id_de_la_ciudad"),
+      direccion: "Dirección de la sucursal"
+    }
+  },
+  { upsert: true }
+)
+```
 
-``````javascript
-db.sucursales.updateOne( { nombre: { $regex: ".*\\S.*", $options: "i" } },  { $set: { nombre: "Sucursal Centro" } },  { upsert: true })
-``````
-
-
+Recomendaciones: Incluir la dirección completa de la sucursal.
 
 ### Caso de Uso 4: Registrar un Nuevo Cliente
 
-Descripción: Un administrador desea registrar un nuevo cliente en la base de datos.
+```javascript
+db.clientes.updateOne(
+  { documento: "12345678" },
+  { $set: { 
+      nombre: "Maria Gonzales",
+      documento: "12345678",
+      direccion: "Dirección del cliente",
+      email: "maria@ejemplo.com"
+    }
+  },
+  { upsert: true }
+)
+```
 
-``````javascript
-db.clientes.updateOne(  { nombre: { $regex: ".*\\S.*", $options: "i" } },  { $set: { nombre: "Maria Gonzales" } },  { upsert: true })
-``````
-
-
+Recomendaciones: Usar el documento de identidad como campo único.
 
 ### Caso de Uso 5: Registrar un Nuevo Teléfono para un Cliente
 
-Descripción: Un administrador desea agregar un número de teléfono para un cliente existente.
-
-``````javascript
+```javascript
 db.clientes.updateOne(
   { _id: ObjectId("cliente_id") },
-  { $push: { telefonos: { numero: "1234567890" } } }
+  { $push: { 
+      telefonos: { 
+        numero: "1234567890",
+        tipo: "celular"
+      } 
+    } 
+  }
 )
-``````
+```
 
-
+Recomendaciones: Incluir un campo para el tipo de teléfono (celular o fijo).
 
 ### Caso de Uso 6: Registrar un Nuevo Paquete
 
-Descripción: Un administrador desea registrar un nuevo paquete en la base de datos.
+```javascript
+db.paquetes.updateOne(
+  { numero_seguimiento: "TRACK123456" },
+  { $set: { 
+      numero_seguimiento: "TRACK123456",
+      peso: 2.5,
+      dimensiones: {
+        largo: 30,
+        ancho: 20,
+        alto: 15
+      },
+      valor_declarado: 100.00,
+      tipo: "nacional"
+    }
+  },
+  { upsert: true }
+)
+```
 
-``````javascript
-db.clientes.updateOne(  { numero_seguimiento: { $regex: ".*\\S.*", $options: "i" } },  { $set: { numero_seguimiento: "TRACK123456" } },  { upsert: true })
-``````
-
-
+Recomendaciones: Incluir campos para peso, dimensiones y valor declarado.
 
 ### Caso de Uso 7: Registrar un Nuevo Envío
 
-Descripción: Un administrador desea registrar un nuevo envío, asociando un cliente, paquete, ruta y sucursal.
-
-``````javascript
+```javascript
 db.envios.insertOne({
   cliente_id: ObjectId("cliente_id"),
   paquete_id: ObjectId("paquete_id"),
   fecha_envio: new Date(),
-  destino: "Avenida Principal 456",
+  destino: {
+    direccion: "Avenida Principal 456",
+    ciudad_id: ObjectId("ciudad_id"),
+    pais_id: ObjectId("pais_id")
+  },
   ruta_id: ObjectId("ruta_id"),
-  sucursal_id: ObjectId("sucursal_id"),
+  sucursal_origen_id: ObjectId("sucursal_id"),
+  estado: "Registrado",
   seguimiento: [
     {
       ubicacion: "Sucursal de origen",
@@ -89,272 +132,257 @@ db.envios.insertOne({
     }
   ]
 })
-``````
+```
 
-
+Recomendaciones: Estructurar la información de destino de manera detallada.
 
 ### Caso de Uso 8: Registrar un Nuevo Vehículo
 
-Descripción: Un administrador desea agregar un nuevo vehículo a la base de datos.
+```javascript
+db.vehiculos.updateOne(
+  { placa: "ABC123" },
+  { $set: { 
+      placa: "ABC123",
+      tipo: "Camión",
+      capacidad: 5000,
+      modelo: "Modelo del vehículo",
+      año: 2022
+    }
+  },
+  { upsert: true }
+)
+```
 
-``````javascript
-db.clientes.updateOne(  { placa: { $regex: ".*\\S.*", $options: "i" } },  { $set: { placa: "ABC123" } },  { upsert: true })
-``````
-
-
+Recomendaciones: Incluir campos para tipo, capacidad y modelo del vehículo.
 
 ### Caso de Uso 9: Registrar un Nuevo Conductor
 
-Descripción: Un administrador desea agregar un nuevo conductor a la base de datos.
+```javascript
+db.conductores.updateOne(
+  { documento: "87654321" },
+  { $set: { 
+      nombre: "Juan Perez",
+      documento: "87654321",
+      licencia: "L12345678",
+      fecha_nacimiento: new Date("1990-01-01"),
+      fecha_contratacion: new Date()
+    }
+  },
+  { upsert: true }
+)
+```
 
-``````javascript
-db.clientes.updateOne(  { nombre: { $regex: ".*\\S.*", $options: "i" } },  { $set: { nombre: "Maria Gonzales" } },  { upsert: true })
-``````
-
-
+Recomendaciones: Incluir campos para licencia y fechas relevantes.
 
 ### Caso de Uso 10: Registrar un Nuevo Teléfono para un Conductor
-
-Descripción: Un administrador desea agregar un número de teléfono para un conductor existente.
 
 ```javascript
 db.conductores.updateOne(
   { _id: ObjectId("conductor_id") },
-  { $push: { telefonos: { numero: "0987654321" } } }
+  { $push: { 
+      telefonos: { 
+        numero: "0987654321",
+        tipo: "celular"
+      } 
+    } 
+  }
 )
 ```
 
-
+Recomendaciones: Similar al caso de uso 5 para clientes.
 
 ### Caso de Uso 11: Asignar un Conductor a una Ruta y un Vehículo
 
-Descripción: Un administrador desea asignar un conductor a una ruta específica utilizando un vehículo.
-
 ```javascript
-
+db.asignaciones.insertOne({
+  conductor_id: ObjectId("conductor_id"),
+  ruta_id: ObjectId("ruta_id"),
+  vehiculo_id: ObjectId("vehiculo_id"),
+  fecha_inicio: new Date(),
+  fecha_fin: null,
+  estado: "Activo"
+})
 ```
 
-
+Recomendaciones: Usar una colección separada para asignaciones.
 
 ### Caso de Uso 12: Registrar un Nuevo Auxiliar
 
-Descripción: Un administrador desea agregar un nuevo auxiliar de reparto a la base de datos.
-
 ```javascript
-
+db.auxiliares.updateOne(
+  { documento: "98765432" },
+  { $set: { 
+      nombre: "Pedro Gomez",
+      documento: "98765432",
+      fecha_nacimiento: new Date("1995-05-05"),
+      fecha_contratacion: new Date()
+    }
+  },
+  { upsert: true }
+)
 ```
 
-
+Recomendaciones: Incluir campos similares a los del conductor.
 
 ### Caso de Uso 13: Asignar un Auxiliar a una Ruta
 
-Descripción: Un administrador desea asignar un auxiliar de reparto a una ruta específica.
-
 ```javascript
-
+db.asignaciones_auxiliares.insertOne({
+  auxiliar_id: ObjectId("auxiliar_id"),
+  ruta_id: ObjectId("ruta_id"),
+  fecha_inicio: new Date(),
+  fecha_fin: null,
+  estado: "Activo"
+})
 ```
 
-
+Recomendaciones: Usar una colección separada para asignaciones de auxiliares.
 
 ### Caso de Uso 14: Registrar un Evento de Seguimiento para un Paquete
 
-Descripción: Un administrador desea registrar un evento de seguimiento para un paquete.
-
 ```javascript
-
+db.envios.updateOne(
+  { _id: ObjectId("envio_id") },
+  { $push: { 
+      seguimiento: {
+        ubicacion: "Centro de distribución",
+        fecha_hora: new Date(),
+        estado: "En tránsito",
+        descripcion: "El paquete ha llegado al centro de distribución"
+      }
+    }
+  }
+)
 ```
 
-
+Recomendaciones: Incluir una descripción detallada del evento.
 
 ### Caso de Uso 15: Generar un Reporte de Envíos por Cliente
 
-Descripción: Un administrador desea generar un reporte de todos los envíos realizados por un cliente específico.
-
 ```javascript
-
+db.envios.aggregate([
+  { $match: { cliente_id: ObjectId("cliente_id") } },
+  { $lookup: {
+      from: "paquetes",
+      localField: "paquete_id",
+      foreignField: "_id",
+      as: "paquete"
+    }
+  },
+  { $unwind: "$paquete" },
+  { $project: {
+      fecha_envio: 1,
+      destino: 1,
+      estado: 1,
+      "paquete.numero_seguimiento": 1,
+      "paquete.peso": 1,
+      "paquete.valor_declarado": 1
+    }
+  }
+])
 ```
 
-
+Recomendaciones: La presentación final del reporte debe manejarse en la capa de aplicación.
 
 ### Caso de Uso 16: Actualizar el Estado de un Paquete
 
-Descripción: Un administrador desea actualizar el estado de un paquete específico.
-
 ```javascript
-
+db.envios.updateOne(
+  { _id: ObjectId("envio_id") },
+  { $set: { estado: "Entregado" },
+    $push: { 
+      seguimiento: {
+        ubicacion: "Dirección de destino",
+        fecha_hora: new Date(),
+        estado: "Entregado",
+        descripcion: "El paquete ha sido entregado al destinatario"
+      }
+    }
+  }
+)
 ```
 
-
+Recomendaciones: Mantener consistencia entre el estado general y el último evento.
 
 ### Caso de Uso 17: Rastrear la Ubicación Actual de un Paquete
 
-Descripción: Un administrador desea rastrear la ubicación actual de un paquete específico.
-
 ```javascript
-
+db.envios.findOne(
+  { "paquete.numero_seguimiento": "TRACK123456" },
+  { seguimiento: { $slice: -1 } }
+)
 ```
 
-
+Recomendaciones: Esta consulta devuelve el último evento de seguimiento.
 
 ## Casos Multitabla
 
 ### Caso de Uso 1: Obtener Información Completa de Envíos
 
-Descripción: Un administrador desea obtener la información completa de todos los envíos, incluyendo detalles del cliente, paquete, ruta, conductor, y sucursal.
-
 ```javascript
-
+db.envios.aggregate([
+  { $lookup: {
+      from: "clientes",
+      localField: "cliente_id",
+      foreignField: "_id",
+      as: "cliente"
+    }
+  },
+  { $lookup: {
+      from: "paquetes",
+      localField: "paquete_id",
+      foreignField: "_id",
+      as: "paquete"
+    }
+  },
+  { $lookup: {
+      from: "rutas",
+      localField: "ruta_id",
+      foreignField: "_id",
+      as: "ruta"
+    }
+  },
+  { $unwind: "$cliente" },
+  { $unwind: "$paquete" },
+  { $unwind: "$ruta" },
+  { $project: {
+      "cliente.nombre": 1,
+      "paquete.numero_seguimiento": 1,
+      "ruta.nombre": 1,
+      fecha_envio: 1,
+      estado: 1
+    }
+  }
+])
 ```
-
-
-
-### Caso de Uso 2: Obtener Historial de Envíos de un Cliente
-
-Descripción: Un administrador desea obtener el historial completo de envíos de un cliente específico, incluyendo detalles de los paquetes y los eventos de seguimiento.
-
-```javascript
-
-```
-
-
-
-### Caso de Uso 3: Listar Conductores y sus Rutas Asignadas
-
-Descripción: Un administrador desea obtener una lista de todos los conductores y las rutas a las que están asignados, incluyendo detalles del vehículo utilizado y la sucursal correspondiente.
-
-```javascript
-
-```
-
-
-
-### Caso de Uso 4: Obtener Detalles de Rutas y Auxiliares Asignados
-
-Descripción: Un administrador desea obtener detalles de todas las rutas, incluyendo los auxiliares asignados a cada ruta.
-
-```javascript
-
-```
-
-
-
-### Caso de Uso 5: Generar Reporte de Paquetes por Sucursal y Estado
-
-Descripción: Un administrador desea generar un reporte de todos los paquetes agrupados por sucursal y estado.
-
-```javascript
-
-```
-
-
-
-### Caso de Uso 6: Obtener Información Completa de un Paquete y su Historial de Seguimiento
-
-Descripción: Un administrador desea obtener la información completa de un paquete específico y su historial de seguimiento.
-
-```javascript
-
-```
-
-
 
 ## Casos de uso Between, In y Not In
 
 ### Caso de Uso 1: Obtener Paquetes Enviados Dentro de un Rango de Fechas
 
-Descripción: Un administrador desea obtener todos los paquetes que fueron enviados dentro de un rango de fechas específico.
-
 ```javascript
-
+db.envios.find({
+  fecha_envio: {
+    $gte: ISODate("2023-01-01"),
+    $lte: ISODate("2023-12-31")
+  }
+})
 ```
-
-
 
 ### Caso de Uso 2: Obtener Paquetes con Ciertos Estados
 
-Descripción: Un administrador desea obtener todos los paquetes que tienen ciertos estados específicos (por ejemplo, 'en tránsito' o 'entregado').
-
 ```javascript
-
+db.envios.find({
+  estado: { $in: ["en tránsito", "entregado"] }
+})
 ```
-
-
 
 ### Caso de Uso 3: Obtener Paquetes Excluyendo Ciertos Estados
 
-Descripción: Un administrador desea obtener todos los paquetes excluyendo aquellos que tienen ciertos estados específicos (por ejemplo, 'recibido' o 'retenido en aduana').
-
 ```javascript
-
+db.envios.find({
+  estado: { $nin: ["recibido", "retenido en aduana"] }
+})
 ```
 
-
-
-### Caso de Uso 4: Obtener Clientes con Envíos Realizados Dentro de un Rango de Fechas
-
-Descripción: Un administrador desea obtener todos los clientes que realizaron envíos dentro de un rango de fechas específico.
-
-```javascript
-
-```
-
-
-
-### Caso de Uso 5: Obtener Conductores Disponibles que No Están Asignados a Ciertas Rutas
-
-Descripción: Un administrador desea obtener todos los conductores que no están asignados a ciertas rutas específicas.
-
-```javascript
-
-```
-
-
-
-### Caso de Uso 6: Obtener Información de Paquetes con Valor Declarado Dentro de un Rango Específico
-
-Descripción: Un administrador desea obtener todos los paquetes cuyo valor declarado está dentro de un rango específico.
-
-```javascript
-
-```
-
-
-
-### Caso de Uso 7: Obtener Auxiliares Asignados a Rutas Específicas
-
-Descripción: Un administrador desea obtener todos los auxiliares de reparto que están asignados a ciertas rutas específicas.
-
-```javascript
-
-```
-
-
-
-### Caso de Uso 8: Obtener Envíos a Destinos Excluyendo Ciertas Ciudades
-
-Descripción: Un administrador desea obtener todos los envíos cuyos destinos no están en ciertas ciudades específicas.
-
-```javascript
-
-```
-
-
-
-### Caso de Uso 9: Obtener Seguimientos de Paquetes en un Rango de Fechas
-
-Descripción: Un administrador desea obtener todos los eventos de seguimiento de paquetes que ocurrieron dentro de un rango de fechas específico.
-
-```javascript
-
-```
-
-
-
-### Caso de Uso 10: Obtener Clientes que Tienen Ciertos Tipos de Paquetes
-
-Descripción: Un administrador desea obtener todos los clientes que tienen paquetes de ciertos tipos específicos (por ejemplo, 'nacional' o 'internacional').
-
-```javascript
-
-```
-
+Nota: Algunas operaciones complejas podrían requerir procesamiento adicional en la capa de aplicación. Se recomienda crear índices en campos frecuentemente utilizados para optimizar el rendimiento.
